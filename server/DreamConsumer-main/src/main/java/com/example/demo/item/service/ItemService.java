@@ -3,6 +3,7 @@ package com.example.demo.item.service;
 import com.example.demo.item.domain.Item;
 import com.example.demo.item.domain.ItemRepository;
 import com.example.demo.item.dto.ItemResponseDto;
+import com.example.demo.item.image.FileSystemStorageService;
 import com.example.demo.item.pagenation.API;
 import com.example.demo.item.pagenation.Pagination;
 import com.example.demo.user.service.UserService;
@@ -11,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -22,10 +25,10 @@ import java.util.stream.Collectors;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
+    private final FileSystemStorageService fileSystemStorageService;
 
     @Transactional
-    public Item savaItem(Item item){
-        userService.updateTier(item.getUserId(), 1);
+    public Item saveItem(Item item){
         return itemRepository.save(item);
     }
 
@@ -45,15 +48,16 @@ public class ItemService {
                 .build();
 
         List<Item> items = list.getContent();
-        List<ItemResponseDto> itemResponseDtos = items.stream().map(a -> a.EntityToItemResponse(a)).collect(Collectors.toList());
-        return API.<List<ItemResponseDto>>builder().body(itemResponseDtos).pagination(pagination).build();
+//        List<ItemResponseDto> itemResponseDtos = items.stream().map(a -> a.EntityToItemResponse(a)).collect(Collectors.toList());
+//        return API.<List<ItemResponseDto>>builder().body(itemResponseDtos).pagination(pagination).build();
+        return API.<List<ItemResponseDto>>builder().body(new ArrayList<>()).pagination(pagination).build();
     }
 
     @Transactional
     public void deleteOneItem(Long itemId){
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException());
-        userService.updateTier(item.getUserId(), -1);
+//        userService.updateTier(item.getUserId(), -1);
         // 아이템 삭제 로직
-        savaItem(item);
+        saveItem(item);
     }
 }

@@ -1,7 +1,6 @@
 package com.example.demo.item.batch;
 
-import com.example.item.db.ItemRepository;
-import com.example.prac.db.PraticeModelRepository;
+import com.example.demo.item.domain.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

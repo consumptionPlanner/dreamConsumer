@@ -61,7 +61,7 @@ public class UserService {
             throw new BusinessLogicException(ExceptionCode.USER_NOT_SLEEPING);
         }
         foundUser.setUserStatus(User.UserStatus.USER_ACTIVE);
-        foundUser.setUpdatedAt(LocalDateTime.now());
+        foundUser.setModifiedAt(LocalDateTime.now());
         return userRepository.save(foundUser);
     }
 

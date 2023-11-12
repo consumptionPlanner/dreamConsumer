@@ -28,6 +28,7 @@ public class BaseEntity  {
     @Column(name="modified_at")
     private LocalDateTime modifiedAt;
 
+
     @Column(name="deleted_at")
     private LocalDateTime deletedAt;
 

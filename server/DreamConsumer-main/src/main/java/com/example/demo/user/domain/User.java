@@ -23,9 +23,9 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE user SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class User extends BaseEntity {
-    @NotNull
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long userId;
 
     @Column(name = "name", nullable = false)
@@ -84,10 +84,14 @@ public class User extends BaseEntity {
         ROLE_ADMIN;
     }
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
+
     @PrePersist
     public void prePersist() {
         this.tier = this.tier == null ? Tier.BRONZE : this.tier;
         this.score = this.score == null ? 0 : this.score;
         this.userStatus = this.userStatus == null ? UserStatus.USER_ACTIVE : this.userStatus;
+        this.deleted = this.deleted == null ? false : this.deleted;
     }
 }

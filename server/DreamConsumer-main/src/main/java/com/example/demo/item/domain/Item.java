@@ -18,13 +18,13 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE item SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE item SET deleted = true and deletedAt = CURRENT_TIMESTAMP WHERE id = ? and deleted = false")
 @Where(clause = "deleted = false")
 public class Item extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -51,13 +51,14 @@ public class Item extends BaseEntity {
     @Column(name = "group_purchase", nullable = false)
     private Boolean groupPurchase = false;
 
-    @Column(name = "money_auto_update", nullable = false)
-    private Boolean moneyAutoUpdate;
+    @Column(name = "auto_update", nullable = false)
+    private Boolean autoUpdate;
 
     @PrePersist
     public void prePersist() {
         this.completed = this.completed == null ? false : this.completed;
         this.deleted = this.deleted == null ? false : this.deleted;
+        this.totalMoney = this.totalMoney == null ? BigDecimal.valueOf(0) : this.totalMoney;
     }
 
 //    public static ItemResponseDto EntityToItemResponse(Item item) {

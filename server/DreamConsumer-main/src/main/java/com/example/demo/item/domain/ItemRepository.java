@@ -1,4 +1,4 @@
-package com.example.item.db;
+package com.example.demo.item.domain;
 
 import com.example.demo.item.domain.Item;
 import org.springframework.data.domain.Page;
@@ -15,6 +15,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item,Long> {
     Page<Item> findAll(Pageable pageable);
 
-    @Query("select c from Item c where c.deleted = true and (:nowTime - c.deletedTime) >= 4L * 60 * 1000")
+//    @Query(value = "select * from Item where deleted = true and (:nowTime - deleted_at) >= 4L * 60 * 1000", nativeQuery = true)
+    @Query(value = "SELECT * FROM item WHERE deleted = true AND TIMESTAMPDIFF(MINUTE, deleted_at, CURRENT_TIMESTAMP()) >= 4", nativeQuery = true)
     List<Item> findItemByDeletedIsTrue(@Param("nowTime") Long nowTime);
 }

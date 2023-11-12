@@ -1,97 +1,60 @@
-package com.example.item.controller;
+package com.example.demo.item.batch;
 
 
-import com.example.item.db.Item;
-import com.example.item.mapper.ItemMapper;
-import com.example.item.model.ItemRequestDto;
-import com.example.item.model.ItemResponseDto;
-import com.example.item.pagenation.API;
-import com.example.item.service.ItemImageService;
-import com.example.item.service.ItemService;
+import com.example.demo.item.domain.Item;
+import com.example.demo.item.domain.ItemRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
+
+import java.util.List;
+
+@Slf4j
+@RequiredArgsConstructor
+public class ItemTasklet implements Tasklet {
+
+    private final ItemRepository itemRepository;
+
+    @Override
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+        log.info("=====Start Change Board Status======");
+        List<Item> items =itemRepository.findItemByDeletedIsTrue(System.currentTimeMillis());
+
+//        List<Item> items = itemRepository.findAll();
+        log.info("{}",items);
+        log.info("{}",System.currentTimeMillis());
+        if(items == null || items.isEmpty()) {
+            log.info("=====변경할 게시글이 없습니다.=====");
+//        } else {
+//            LocalDate currentDate = LocalDate.now();
+//            for(PracticeModel practiceModel : practiceModels){
+//                LocalDate userDate = practiceModel.getDeletedTime();
+//                Period period = Period.between(userDate, currentDate);
+//                if (period.getDays() >= 31 || period.getMonths() >= 1) {
+//                   praticeModelRepository.delete(practiceModel);
+//                }
+//            }
+        }else {
+            for(Item item : items) {
+                itemRepository.delete(item);
+            }
 
 
+//            LocalDateTime currentDate = LocalDateTime.now();
+//            for(PracticeModel practiceModel : practiceModels){
+//                LocalDateTime userDate = practiceModel.getDeletedTime();
+//                Duration duration = Duration.between(userDate, currentDate);
+//                if (duration.toMinutes() >= 4) {
+//                    praticeModelRepository.delete(practiceModel);
+//                }
+//            }
 
-
-
-
-
-        Expand All
-
-@@ -14,6 +17,7 @@
-
-        import org.springframework.data.domain.Sort;
-        import org.springframework.data.web.PageableDefault;
-        import org.springframework.http.HttpStatus;
-        import org.springframework.http.ResponseEntity;
-        import org.springframework.web.bind.annotation.*;
-        import org.springframework.web.multipart.MultipartFile;
-
-        import java.util.List;
-
-
-
-
-
-
-
-
-        Expand All
-
-@@ -27,6 +31,8 @@ public class ItemController {
-
-    @RestController
-    @RequiredArgsConstructor
-    @RequestMapping("/items")
-    @Slf4j
-    public class ItemController {
-        private final ItemService itemService;
-        private final ItemMapper itemMapper;
-
-        private final ItemImageService itemImageService;
-
-        @PostMapping("")
-        public ResponseEntity saveItem(@RequestBody ItemRequestDto itemRequestDto){
-            ItemResponseDto itemResponseDto = Item.EntityToItemResponse(itemService.savaItem(itemMapper.itemRequestDtoToItem(itemRequestDto)));
-
-
-
-
-
-
-
-            Expand All
-
-            @@ -38,4 +44,17 @@ public ResponseEntity getAll(@PageableDefault(size=20, sort="id",direction = Sor
-
-                    return new ResponseEntity(itemResponseDto, HttpStatus.CREATED);
-                    }
-        @GetMapping("")
-        public ResponseEntity getAll(@PageableDefault(size=20, sort="id",direction = Sort.Direction.DESC) Pageable pageable){
-            API<List<ItemResponseDto>> listAPI = itemService.getAllItems(pageable);
-            return new ResponseEntity(listAPI, HttpStatus.ACCEPTED);
         }
-
-        @DeleteMapping("/{id}")
-        public void deleteOne(@PathVariable(name = "id")Long id){
-            itemService.deleteOneItem(id);
-        }
-
-        @PostMapping("/image")
-        public void registerPost(
-                @RequestPart(value="itemRequest", required = true) ItemRequestDto itemRequestDto,
-                @RequestPart(value="image", required = true) MultipartFile image
-        ) {
-            itemImageService.registerPost(itemMapper.itemRequestDtoToItem(itemRequestDto),image);
-            return;
-        }
+        log.info("=====End Change Board Status======");
+        return RepeatStatus.FINISHED;
     }
+}

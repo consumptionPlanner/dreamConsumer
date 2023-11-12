@@ -10,14 +10,14 @@ import java.nio.file.*;
 
 @Slf4j
 @Service
-public class FileSystemStorageService2 implements StoreService2 {
+public class FileSystemStorageService implements StoreService2 {
     //    private final Path rootLocation = Paths.get("/Users/jangtaehwan/file");
     private final Path rootLocation = Paths.get(System.getProperty("user.home"), "file");
     @Override
     public String store(MultipartFile file,String name) {
         String storedFilePath = null;
         try {
-            if (file.isEmpty()) {
+            if (file.isEmpty()) { // 20번째 라인
                 throw new FileSystemNotFoundException("Failed to store empty file.");
             }
             String newDirectoryName = String.valueOf(name);
