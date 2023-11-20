@@ -1,6 +1,9 @@
 package com.dreamconsumer.consumptionplanner.auth.handler;
 
+import com.dreamconsumer.consumptionplanner.response.ErrorResponse;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -20,25 +23,10 @@ public class UserAuthenticationFailureHandler implements AuthenticationFailureHa
     }
 
     public void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
-//        Gson gson = new Gson();
-//
-//        class ErrorResponse {
-//            String error;
-//
-//            ErrorResponse(String error) {
-//                this.error = error;
-//            }
-//        }
-//
-//        ErrorResponse errorResponse = new ErrorResponse(errorMessage);
-//
-//        String jsonResponse = gson.toJson(errorResponse);
-//        log.info("JSON Response: {}", jsonResponse); // null로 변환됨
-        String jsonResponse = String.format("{\n\t\"error\": \"%s\"\n}", errorMessage);
-
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401
+        Gson gson = new Gson();
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.UNAUTHORIZED); // 401
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.getWriter().write(gson.toJson(errorResponse, ErrorResponse.class));
     }
 }

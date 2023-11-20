@@ -5,6 +5,7 @@ import com.dreamconsumer.consumptionplanner.exception.BusinessLogicException;
 import com.dreamconsumer.consumptionplanner.exception.ExceptionCode;
 import com.dreamconsumer.consumptionplanner.member.domain.Member;
 import com.dreamconsumer.consumptionplanner.member.domain.MemberRepository;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,10 +29,10 @@ public class MemberDetailsService implements org.springframework.security.core.u
         Optional<Member> optionalUser = memberRepository.findByEmail(username);
         Member findMember = optionalUser.orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
-
         return new AuthorizedMemberDetails(findMember);
     }
 
+    @ToString
     private final class AuthorizedMemberDetails extends Member implements UserDetails {
         AuthorizedMemberDetails(Member member) {
             // 이거 어디까지 해야 하지? -> 어디서 쓰이는지 확인해봐야겠다

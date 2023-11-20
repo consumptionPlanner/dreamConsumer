@@ -32,6 +32,8 @@ public class AuthorityUtils {
         List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_"+role))
                 .collect(Collectors.toList());
+        System.out.println("******** GrantedAuthorities******");
+        authorities.forEach((authority) -> System.out.println(authority));
         return authorities;
     }
 

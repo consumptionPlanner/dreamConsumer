@@ -7,6 +7,8 @@ import com.dreamconsumer.consumptionplanner.item.service.ItemFacadeService;
 import com.dreamconsumer.consumptionplanner.item.service.ItemService;
 import com.dreamconsumer.consumptionplanner.member_item.domain.MemberItem;
 import com.dreamconsumer.consumptionplanner.member_item.mapper.MemberItemMapper;
+import com.dreamconsumer.consumptionplanner.tag.mapper.TagMapper;
+import com.dreamconsumer.consumptionplanner.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +17,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,14 +27,17 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
     private final ItemFacadeService itemFacadeService;
-    private final MemberItemMapper userItemMapper;
+    private final MemberItemMapper memberItemMapper;
+    private final TagService tagService;
+    private final TagMapper tagMapper;
 
     @PostMapping("")
     public ResponseEntity saveItem(@RequestBody ItemRequestDto itemRequestDto){
         // 공동 구매 URL 생성 로직 필요
         Item item = itemMapper.itemRequestDtoToItem(itemRequestDto);
-        MemberItem memberItem = userItemMapper.itemRequestToMemberItem(itemRequestDto);
-        memberItem.setTags(itemRequestDto.getTags());
+        MemberItem memberItem = memberItemMapper.itemRequestToMemberItem(itemRequestDto);
+        // mapper에서 tag 객체로 변한 후 service에서 saveAll
+        memberItem.setTags(tagMapper.stringsToTags(itemRequestDto.getTags(), memberItem));
         itemFacadeService.saveItemAndUserItem(item, memberItem, itemRequestDto.getUserId());
         return new ResponseEntity(itemMapper.ItemToItemResponseDto(item), HttpStatus.CREATED);
     }

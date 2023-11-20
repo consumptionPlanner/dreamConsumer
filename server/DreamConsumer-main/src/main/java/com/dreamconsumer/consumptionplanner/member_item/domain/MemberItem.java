@@ -24,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE member_item SET deleted = true and deletedAt = CURRENT_TIMESTAMP  WHERE id = ?")
 @Where(clause = "deleted = false")
-public class MemberItem extends BaseEntity {
+public class MemberItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id", nullable = false)
@@ -44,8 +44,9 @@ public class MemberItem extends BaseEntity {
     @Column(name="unit_amount", nullable = false)
     private BigDecimal unitAmount;
 
-    Boolean autoUpdate;
-    @Enumerated(EnumType.STRING)
+    @Column(name = "auto_update", nullable = false)
+    private Boolean autoUpdate;
+
     @Column(name = "cycle", nullable = false)
     private Cycle cycle;
 

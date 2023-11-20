@@ -2,6 +2,8 @@ package com.dreamconsumer.consumptionplanner.config;
 
 import com.dreamconsumer.consumptionplanner.auth.filter.JwtAuthenticationFilter;
 import com.dreamconsumer.consumptionplanner.auth.filter.JwtVerificationFilter;
+import com.dreamconsumer.consumptionplanner.auth.handler.UserAccessDeniedHandler;
+import com.dreamconsumer.consumptionplanner.auth.handler.UserAuthenticationEntryPoint;
 import com.dreamconsumer.consumptionplanner.auth.handler.UserAuthenticationFailureHandler;
 import com.dreamconsumer.consumptionplanner.auth.handler.UserAuthenticationSuccessHandler;
 import com.dreamconsumer.consumptionplanner.auth.jwt.JwtTokenizer;
@@ -42,20 +44,26 @@ public class SecurityConfiguration {
                 //.cors(Customizer.withDefaults()) // CorsConfigurationSource Bean 사용
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
                 .formLogin().disable() // form Login은 SSR에서 사용
                 .httpBasic().disable() // httpBasic : UserName/Password 정보를 http header에 실어 인증
-                .apply(new CustomFilterConfigure())   // (1)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new UserAuthenticationEntryPoint())
+                .accessDeniedHandler(new UserAccessDeniedHandler())
+                .and()
+
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/users/sign-up").permitAll()
                         .antMatchers("/users/sign-in").permitAll()
                         .antMatchers(HttpMethod.DELETE,"/users/{member-id}").hasRole("USER") // 회원 탈퇴
                         .antMatchers(HttpMethod.PATCH, "/activate/{member-id}").hasRole("USER") // 휴면 계정 해제
                         .antMatchers(HttpMethod.GET,"/users/{member-id}").hasRole("USER")
-                        .antMatchers("/**").permitAll()
-                );
+                        .antMatchers("/items").hasRole("USER")
+//                        .antMatchers("/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .apply(new CustomFilterConfigure());
         return http.build();
     }
 
@@ -89,7 +97,7 @@ public class SecurityConfiguration {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
             jwtAuthenticationFilter.setFilterProcessesUrl("/users/sign-in");
-            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new UserAuthenticationSuccessHandler()); // 404 오류 수정
+            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new UserAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new UserAuthenticationFailureHandler());
 
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils);

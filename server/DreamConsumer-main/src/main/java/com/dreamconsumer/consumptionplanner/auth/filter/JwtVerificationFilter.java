@@ -4,6 +4,7 @@ import com.dreamconsumer.consumptionplanner.auth.utils.AuthorityUtils;
 import com.dreamconsumer.consumptionplanner.auth.jwt.JwtTokenizer;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class JwtVerificationFilter extends OncePerRequestFilter { // Request 당 JWT 1회 검증
     private final JwtTokenizer jwtTokenizer; // JWT 검증, claims 얻기
     private final AuthorityUtils authorityUtils; // Authentication 권한 생성
@@ -49,7 +51,8 @@ public class JwtVerificationFilter extends OncePerRequestFilter { // Request 당
     @Override // 조건 true이면 filter 건너뛰고 다음 필터로
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String authorization = request.getHeader("Authorization");
-
+        logger.info("*********** JWTVerificationFilter");
+        logger.info("Authorization ? : " + authorization);
         // authorization이 null이거나 JWT가 아니면 다음 필터로
         return authorization == null || !authorization.startsWith("Bearer");
     }
@@ -58,14 +61,20 @@ public class JwtVerificationFilter extends OncePerRequestFilter { // Request 당
         String jws = request.getHeader("Authorization").replace("Bearer ", ""); // request header에서 JWT 얻기
         String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey()); // JWT 검증 위한 secretkey 얻기
         Map<String, Object> claims = jwtTokenizer.getClaims(jws, base64EncodedSecretKey).getBody(); // Signature 검증 성공 -> claims 파싱
+//        logger.info((Object) "JWT verification filter - roles: {}", claims.get("roles"));
         return claims;
     }
 
     private void setAuthenticationToContext(Map<String, Object> claims) {
-        String username = (String) claims.get("username");
-        List<GrantedAuthority> authorities = authorityUtils.createAuthorities((String) claims.get("roles"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            String username = (String) claims.get("username");
+            List<GrantedAuthority> authorities = authorityUtils.createAuthorities((String) claims.get("roles"));
+            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (Exception e) {
+            logger.info("*********** JWTVerificationFilter");
+            logger.error("Error setting authentication in context", e);
+            throw e;
+        }
     }
-
 }

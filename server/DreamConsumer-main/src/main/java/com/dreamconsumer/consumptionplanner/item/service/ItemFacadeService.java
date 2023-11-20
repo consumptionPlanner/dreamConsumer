@@ -5,9 +5,9 @@ import com.dreamconsumer.consumptionplanner.image.service.FileSystemStorageServi
 import com.dreamconsumer.consumptionplanner.member.service.MemberService;
 import com.dreamconsumer.consumptionplanner.member_item.domain.MemberItem;
 import com.dreamconsumer.consumptionplanner.member_item.service.MemberItemService;
+import com.dreamconsumer.consumptionplanner.tag.service.TagService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ItemFacadeService {
@@ -16,12 +16,14 @@ public class ItemFacadeService {
     private final MemberItemService memberItemService;
     private final MemberService memberService;
     private final FileSystemStorageService fileSystemStorageService;
+    private final TagService tagService;
 
-    public ItemFacadeService(ItemService itemService, MemberItemService memberItemService, MemberService memberService, FileSystemStorageService fileSystemStorageService) {
+    public ItemFacadeService(ItemService itemService, MemberItemService memberItemService, MemberService memberService, FileSystemStorageService fileSystemStorageService, TagService tagService) {
         this.itemService = itemService;
         this.memberItemService = memberItemService;
         this.memberService = memberService;
         this.fileSystemStorageService = fileSystemStorageService;
+        this.tagService = tagService;
     }
 
     @Transactional

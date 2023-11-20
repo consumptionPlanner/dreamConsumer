@@ -12,6 +12,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE item SET deleted = true and deletedAt = CURRENT_TIMESTAMP WHERE id = ? and deleted = false")
 @Where(clause = "deleted = false")
-public class Item extends BaseEntity {
+public class Item extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -53,14 +54,12 @@ public class Item extends BaseEntity {
     @Column(name = "group_purchase", nullable = false)
     private Boolean groupPurchase = false;
 
-    @Column(name = "auto_update", nullable = false)
-    private Boolean autoUpdate;
-
     @OneToMany(mappedBy = "item", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberItem> memberItems = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
+        System.out.println("*****prePersist********");
         this.completed = this.completed == null ? false : this.completed;
         this.deleted = this.deleted == null ? false : this.deleted;
         this.totalMoney = this.totalMoney == null ? BigDecimal.valueOf(0) : this.totalMoney;

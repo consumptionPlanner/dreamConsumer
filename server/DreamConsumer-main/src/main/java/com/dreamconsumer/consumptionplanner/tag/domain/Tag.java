@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "item")
+@Table(name = "tag")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE tag SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
-public class Tag extends BaseEntity {
+public class Tag{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id", nullable = false)
@@ -30,7 +30,7 @@ public class Tag extends BaseEntity {
     @Column(name="contents", nullable = false)
     private String contents;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="member_item_id")
     private MemberItem memberItem;
 }

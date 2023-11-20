@@ -21,7 +21,7 @@ public class ItemRequestDto {
     @NotNull
     private BigDecimal price;
 
-    private List<Tag> tags;
+    private List<String> tags;
 
     private String itemUrl;
 
