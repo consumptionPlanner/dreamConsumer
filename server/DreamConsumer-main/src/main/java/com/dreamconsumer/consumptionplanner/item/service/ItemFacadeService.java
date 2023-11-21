@@ -1,7 +1,6 @@
 package com.dreamconsumer.consumptionplanner.item.service;
 
 import com.dreamconsumer.consumptionplanner.item.domain.Item;
-import com.dreamconsumer.consumptionplanner.image.service.FileSystemStorageService;
 import com.dreamconsumer.consumptionplanner.member.service.MemberService;
 import com.dreamconsumer.consumptionplanner.member_item.domain.MemberItem;
 import com.dreamconsumer.consumptionplanner.member_item.service.MemberItemService;
@@ -15,14 +14,12 @@ public class ItemFacadeService {
     private final ItemService itemService;
     private final MemberItemService memberItemService;
     private final MemberService memberService;
-    private final FileSystemStorageService fileSystemStorageService;
     private final TagService tagService;
 
-    public ItemFacadeService(ItemService itemService, MemberItemService memberItemService, MemberService memberService, FileSystemStorageService fileSystemStorageService, TagService tagService) {
+    public ItemFacadeService(ItemService itemService, MemberItemService memberItemService, MemberService memberService, TagService tagService) {
         this.itemService = itemService;
         this.memberItemService = memberItemService;
         this.memberService = memberService;
-        this.fileSystemStorageService = fileSystemStorageService;
         this.tagService = tagService;
     }
 

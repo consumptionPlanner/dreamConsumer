@@ -13,5 +13,4 @@ public class ItemResponseDto {
 
     private Long id;
     private String groupPurchaseUrl="구현 중";
-    private String imageUrl;
 }

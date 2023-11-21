@@ -11,3 +11,18 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none # 서버는 validate
+  servlet:
+    multipart: # 과금 방지
+      max-file-size: 10MB
+      max-request-size: 10MB
+cloud:
+  aws:
+    region:
+      static: ${DREAMCONSUMER_AWS_REGION}
+    s3:
+      bucket: ${DREAMCONSUMER_AWS_S3_BUCKET_NAME}
+    credentials:
+      access-key: ${DREAMCONSUMER_AWS_S3_ACCESS_KEY}
+      secret-key: ${DREAMCONSUMER_AWS_S3_SECRET_KEY}
+    stack:
+      auto: false # cloudFormation 기능 비활성화

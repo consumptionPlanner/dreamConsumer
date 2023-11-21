@@ -60,8 +60,8 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.PATCH, "/activate/{member-id}").hasRole("USER") // 휴면 계정 해제
                         .antMatchers(HttpMethod.GET,"/users/{member-id}").hasRole("USER")
                         .antMatchers("/items").hasRole("USER")
-//                        .antMatchers("/**").permitAll()
-                        .anyRequest().authenticated()
+                        .antMatchers("/**").permitAll()
+//                        .anyRequest().authenticated()
                 )
                 .apply(new CustomFilterConfigure());
         return http.build();
